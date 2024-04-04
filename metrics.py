@@ -1,7 +1,12 @@
 import psutil  # This is for gathering system information
-import datetime  # We'll need this for timestamps
+import datetime  # This is for timestamps
 import sqlite3  # Database to store our system information
+import json # To store config files
 
+def load_config(filename):
+    with open(filename, 'r') as f:
+        config = json.load(f)
+    return config
 
 def connect_database():
     conn = sqlite3.connect('system_data.db') # Connect to or create the database file
@@ -63,7 +68,9 @@ def insert_metrics(conn, metrics):
     conn.commit() # Commits changes to database
 
 
-if __name__ == "__main__":  
+if __name__ == "__main__":
+    config = load_config('config.json') # Loads the config file
+
     # Create database and table
     conn = connect_database()
     create_metrics_table(conn)
@@ -72,5 +79,8 @@ if __name__ == "__main__":
     metrics = get_system_metrics()
     insert_metrics(conn, metrics)
 
+    # Checks for high CPU usage
+    if metrics['cpu_percent'] > config['thresholds']['cpu_percent']:
+        print("High CPU Usage Alert!")
     # Close the database connection
     conn.close
