@@ -82,10 +82,6 @@ def check_disk_usage(metrics, config):
     if metrics['disk_percent'] > config['thresholds']['disk_percent']:
         print("High Disk Usage Alert!")
 
-# Checks for high network usage
-def check_network_usage(metrics, config):
-    if metrics['network_in'] > config['thresholds']['network_in'] or metrics['network_out'] > config['thresholds']['network_out']:
-        print("High Network Usage Alert!")
 
 if __name__ == "__main__":
     config = load_config('config.json')  # Loads the config file
