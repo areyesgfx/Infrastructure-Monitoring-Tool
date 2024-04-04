@@ -1,7 +1,11 @@
+import os
 import psutil  # This is for gathering system information
 import datetime  # This is for timestamps
 import sqlite3  # Database to store our system information
 import json  # To store config files
+import requests # Sending messages through discord webhooks
+from dotenv import load_dotenv # Pulls webhook urls from private .env file
+
 
 def load_config(filename):
     with open(filename, 'r') as f:
@@ -67,20 +71,36 @@ def insert_metrics(conn, metrics):
     ))
     conn.commit()  # Commits changes to database
 
+
+# Load private webhook urls
+load_dotenv()
+alert_url = os.getenv('alert_url')
+
+# Sends Alert message to discord channel
+def send_discord_alert(message):
+    data = {"content": message}
+    response = requests.post(alert_url, json=data)
+    if not response.status_code == 204: # Checks if message went through
+        print("Error Sending Discord Alert")
+
+
 # Checks for high CPU usage
 def check_cpu_usage(metrics, config):
+    alert_message = "High CPU Usage Alert! {}%".format(metrics['cpu_percent'])
     if metrics['cpu_percent'] > config['thresholds']['cpu_percent']:
-        print("High CPU Usage Alert!")
+        send_discord_alert(alert_message)
 
 # Checks for high memory usage
 def check_memory_usage(metrics, config):
-    if metrics['memory_available'] < config['thresholds']['memory_available']:
-        print("Low Memory Alert!")
+    alert_message = "Low Memory Alert! Available Memory: {:.2f} MB".format(metrics['memory_available'])
+    if metrics['memory_available'] < config['thresholds']['memory_threshold_bytes']:
+        send_discord_alert(alert_message)
 
 # Checks for high disk usage
 def check_disk_usage(metrics, config):
+    alert_message = "High Disk Usage Alert! {}%".format(metrics['disk_percent'])
     if metrics['disk_percent'] > config['thresholds']['disk_percent']:
-        print("High Disk Usage Alert!")
+        send_discord_alert(alert_message)
 
 
 if __name__ == "__main__":
@@ -98,7 +118,6 @@ if __name__ == "__main__":
     check_cpu_usage(metrics, config)
     check_memory_usage(metrics, config)
     check_disk_usage(metrics, config)
-    check_network_usage(metrics, config)
 
     # Close the database connection
     conn.close()
