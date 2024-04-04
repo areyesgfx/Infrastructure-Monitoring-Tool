@@ -1,7 +1,7 @@
 import psutil  # This is for gathering system information
 import datetime  # This is for timestamps
 import sqlite3  # Database to store our system information
-import json # To store config files
+import json  # To store config files
 
 def load_config(filename):
     with open(filename, 'r') as f:
@@ -9,7 +9,7 @@ def load_config(filename):
     return config
 
 def connect_database():
-    conn = sqlite3.connect('system_data.db') # Connect to or create the database file
+    conn = sqlite3.connect('system_data.db')  # Connect to or create the database file
     return conn
 
 # Creates a table within the database
@@ -50,37 +50,59 @@ def get_system_metrics():
 
     return metrics
 
-# Adds sytem information to the database
+# Adds system information to the database
 def insert_metrics(conn, metrics):
     cursor = conn.cursor()
     cursor.execute('''
         INSERT INTO metrics (timestamp, cpu_percent, memory_available, disk_used, disk_percent, network_in, network_out)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     ''', (
-    metrics['timestamp'].isoformat(),
-    metrics['cpu_percent'],
-    metrics['memory_available'],
-    metrics['disk_used'],
-    metrics['disk_percent'],
-    metrics['network_in'],
-    metrics['network_out']
+        metrics['timestamp'].isoformat(),
+        metrics['cpu_percent'],
+        metrics['memory_available'],
+        metrics['disk_used'],
+        metrics['disk_percent'],
+        metrics['network_in'],
+        metrics['network_out']
     ))
-    conn.commit() # Commits changes to database
+    conn.commit()  # Commits changes to database
 
+# Checks for high CPU usage
+def check_cpu_usage(metrics, config):
+    if metrics['cpu_percent'] > config['thresholds']['cpu_percent']:
+        print("High CPU Usage Alert!")
+
+# Checks for high memory usage
+def check_memory_usage(metrics, config):
+    if metrics['memory_available'] < config['thresholds']['memory_available']:
+        print("Low Memory Alert!")
+
+# Checks for high disk usage
+def check_disk_usage(metrics, config):
+    if metrics['disk_percent'] > config['thresholds']['disk_percent']:
+        print("High Disk Usage Alert!")
+
+# Checks for high network usage
+def check_network_usage(metrics, config):
+    if metrics['network_in'] > config['thresholds']['network_in'] or metrics['network_out'] > config['thresholds']['network_out']:
+        print("High Network Usage Alert!")
 
 if __name__ == "__main__":
-    config = load_config('config.json') # Loads the config file
+    config = load_config('config.json')  # Loads the config file
 
     # Create database and table
     conn = connect_database()
     create_metrics_table(conn)
-    
+
     # Gather metrics from system and add to database
     metrics = get_system_metrics()
     insert_metrics(conn, metrics)
 
-    # Checks for high CPU usage
-    if metrics['cpu_percent'] > config['thresholds']['cpu_percent']:
-        print("High CPU Usage Alert!")
+    # Check all thresholds
+    check_cpu_usage(metrics, config)
+    check_memory_usage(metrics, config)
+    check_disk_usage(metrics, config)
+    check_network_usage(metrics, config)
+
     # Close the database connection
-    conn.close
+    conn.close()
