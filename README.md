@@ -1,4 +1,4 @@
-# Overwatch - Infrastructure Monitoring Tool
+# Infrastructure Monitoring Tool
 A Python-based tool to collect system metrics, store them in a database, provide alerts, and visualize data via a simple web dashboard.
 
 ## Features
