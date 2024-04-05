@@ -1,8 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for
 import sqlite3
 import datetime 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 # Connects to db and pulls in data for the dashboard
 def get_latest_metrics():
