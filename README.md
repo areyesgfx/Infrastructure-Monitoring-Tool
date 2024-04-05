@@ -24,4 +24,7 @@ A Python-based tool to collect system metrics, store them in a database, provide
 ```bash
 pip install requests psutil flask 
 
+**Configuration:**
+
+1. **config.json:**
 
