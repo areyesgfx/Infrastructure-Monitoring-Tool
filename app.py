@@ -4,12 +4,14 @@ import datetime
 
 app = Flask(__name__)
 
+# Connects to db and pulls in data for the dashboard
 def get_latest_metrics():
     conn = sqlite3.connect('system_data.db')
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM metrics ORDER BY id DESC LIMIT 1')
     row = cursor.fetchone()
     conn.close()
+
     return row
 
 @app.route('/')
