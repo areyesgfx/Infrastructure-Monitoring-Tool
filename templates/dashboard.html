@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>System Monitoring Dashboard</title>
+</head>
+<body>
+    <h1>Latest System Metrics</h1>
+    <p>Timestamp: {{ metrics[1] }}</p>
+    <p>CPU Usage: {{ metrics[2] }}%</p>
+    <p>Memory Available: {{ metrics[3] // 1024 // 1024 }} MB</p>
+    <p> Disk Usage: {{ metrics[4] // 1024 // 1024 }} MB</p> 
+    </body>
+</html>
