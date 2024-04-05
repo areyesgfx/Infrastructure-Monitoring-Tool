@@ -17,12 +17,12 @@ A Python-based tool to collect system metrics, store them in a database, provide
 **Prerequisites:**
 
 * Python 3.12.2 (`https://python.org`)
-* Libraries: `requests`, `psutil`, `flask`, `discord`, `python-dotenv`
+* Libraries: `requests`, `psutil`, `flask`, `python-dotenv`
 
 **Installation:**
 
 ```bash
-pip install requests psutil flask discord python-dotenv
+pip install requests psutil flask python-dotenv
 ```
 
 **Configuration:**
